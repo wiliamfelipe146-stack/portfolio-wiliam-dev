@@ -29,7 +29,7 @@ function Contato() {
     };
 
     try {
-      const response = await fetch("http://localhost:8000/api/leads", {
+      const response = await fetch("https://backend-wiliam-dev.onrender.com/api/leads", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

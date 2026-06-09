@@ -13,11 +13,11 @@ function Home() {
   // 🟢 2. Efeito colateral para Analytics e busca de configurações
   useEffect(() => {
     // Registra o acesso de forma invisível para o gráfico do seu Dashboard
-    fetch("http://localhost:8000/api/analytics/acesso", { method: "POST" })
+    fetch("https://backend-wiliam-dev.onrender.com/api/analytics/acesso", { method: "POST" })
       .catch(err => console.log("Analytics offline"));
 
     // Puxa os textos em tempo real armazenados no SQLite
-    fetch("http://localhost:8000/api/config")
+    fetch("https://backend-wiliam-dev.onrender.com/api/config")
       .then(res => res.json())
       .then(data => {
         // Se o banco retornar os dados corretamente, atualiza o estado

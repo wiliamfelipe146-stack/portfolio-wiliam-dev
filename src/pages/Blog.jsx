@@ -10,7 +10,7 @@ function Blog() {
   useEffect(() => {
     const buscarArtigos = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/posts");
+        const response = await fetch("https://backend-wiliam-dev.onrender.com/api/posts");
         const dados = await response.json();
         if (response.ok) {
           setArtigos(dados);

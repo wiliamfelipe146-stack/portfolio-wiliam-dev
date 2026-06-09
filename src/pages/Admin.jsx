@@ -20,18 +20,18 @@ function Admin() {
 
   const carregarDados = async () => {
     try {
-      // 1. Puxa métricas do Dashboard
-      const resDash = await fetch("http://localhost:8000/api/dashboard/dados");
+      // 1. Puxa métricas do Dashboard (Link da Render)
+      const resDash = await fetch("https://backend-wiliam-dev.onrender.com/api/dashboard/dados");
       const dataDash = await resDash.json();
       setMetricas(dataDash);
 
-      // 2. Puxa lista de Leads (CRM)
-      const resLeads = await fetch("http://localhost:8000/api/leads");
+      // 2. Puxa lista de Leads (Link da Render)
+      const resLeads = await fetch("https://backend-wiliam-dev.onrender.com/api/leads");
       const dataLeads = await resLeads.json();
       setLeads(dataLeads);
 
-      // 3. Puxa textos atuais do site (CMS)
-      const resConfig = await fetch("http://localhost:8000/api/config");
+      // 3. Puxa textos atuais do site (Link da Render)
+      const resConfig = await fetch("https://backend-wiliam-dev.onrender.com/api/config");
       const dataConfig = await resConfig.json();
       setConfig(dataConfig);
 
@@ -45,12 +45,12 @@ function Admin() {
   const handleSaveConfig = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:8000/api/config", {
+      const response = await fetch("https://backend-wiliam-dev.onrender.com/api/config", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(config),
       });
-      if (response.ok) alert("✨ Textos do site atualizados com sucesso!");
+      if (response.ok) alert("✨ Textos do site updated com sucesso!");
     } catch (error) {
       alert("Erro ao atualizar textos.");
     }
@@ -60,7 +60,7 @@ function Admin() {
   const handleCreatePost = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:8000/api/posts", {
+      const response = await fetch("https://backend-wiliam-dev.onrender.com/api/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newPost),
