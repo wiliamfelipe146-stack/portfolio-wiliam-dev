@@ -15,7 +15,7 @@ import './App.css';
 const API_URL = import.meta.env.PROD 
   ? "https://backend-wiliam-dev.onrender.com/api" 
   : "http://localhost:8000/api";
-  
+
 function App() {
   // --- 🔒 ESTADOS DO POP-UP BLOQUEADOR ---
   const [mostrarPopup, setMostrarPopup] = useState(false);
@@ -51,7 +51,7 @@ function App() {
     setStatus('⏳ Processando e validando...');
 
     try {
-     const response = await fetch(`${API_URL}/api/leads`, {
+     const response = await fetch("https://backend-wiliam-dev.onrender.com/api/leads", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
