@@ -19,50 +19,71 @@ function Admin() {
   }, []);
 
   const carregarDados = async () => {
-  try {
-    // 1. Puxa métricas do Dashboard
-    const resDash = await fetch("https://backend-wiliam-dev.onrender.com/api/dashboard/dados");
-    const dataDash = await resDash.json();
-    setMetricas(dataDash);
+    try {
+      // 1. Puxa métricas do Dashboard
+      const resDash = await fetch("https://backend-wiliam-dev.onrender.com/api/dashboard/dados");
+      const dataDash = await resDash.json();
+      setMetricas(dataDash);
 
-    // 2. Puxa lista de Leads (CORRIGIDO: URL fixa sem duplicar e sem erro de variável)
-    const resLeads = await fetch("https://backend-wiliam-dev.onrender.com/api/leads");
-    const dataLeads = await resLeads.json();
-    setLeads(dataLeads);
+      // 2. Puxa lista de Leads
+      const resLeads = await fetch("https://backend-wiliam-dev.onrender.com/api/leads");
+      const dataLeads = await resLeads.json();
+      setLeads(dataLeads);
 
-    // 3. Puxa textos atuais do site
-    const resConfig = await fetch("https://backend-wiliam-dev.onrender.com/api/config");
-    const dataConfig = await resConfig.json();
-    setConfig(dataConfig);
+      // 3. Puxa textos atuais do site
+      const resConfig = await fetch("https://backend-wiliam-dev.onrender.com/api/config");
+      const dataConfig = await resConfig.json();
+      setConfig(dataConfig);
 
-    setLoading(false);
-  } catch (error) {
-    console.error("Erro ao carregar dados do painel:", error);
-    setLoading(false);
-  }
-};
-
-const handleCreatePost = async (e) => {
-  e.preventDefault();
-  try {
-    // CORRIGIDO: Removido o /api/api/ duplicado
-    const response = await fetch("https://backend-wiliam-dev.onrender.com/api/posts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newPost)
-    });
-
-    if (response.ok) {
-      alert("🎉 Artigo publicado com sucesso no banco SQLite!");
-      setNewPost({ titulo: '', conteudo: '', categoria: 'Tecnologia' });
-      carregarDados(); // Recarrega o painel
+      setLoading(false);
+    } catch (error) {
+      console.error("Erro ao carregar dados do painel:", error);
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("Erro ao publicar post:", error);
-  }
-};
+  };
 
-  if (loading) return <div style={{ color: '#10b981', textAlignment: 'center', padding: '50px' }}>Carregando Painel de Controle...</div>;
+  // 🟢 ADICIONADO & AJUSTADO: Função para salvar as alterações do CMS (Evita erro de compilação na Vercel)
+  const handleSaveConfig = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("https://backend-wiliam-dev.onrender.com/api/config", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(config)
+      });
+
+      if (response.ok) {
+        alert("💾 Configurações institucionais atualizadas com sucesso no SQLite!");
+        carregarDados(); // Recarrega os dados atualizados
+      } else {
+        alert("⚠️ Erro ao atualizar configurações.");
+      }
+    } catch (error) {
+      console.error("Erro ao salvar configurações do CMS:", error);
+    }
+  };
+
+  const handleCreatePost = async (e) => {
+    e.preventDefault();
+    try {
+      // 🟢 AJUSTADO: Rota de posts unificada e apontando corretamente para o backend
+      const response = await fetch("https://backend-wiliam-dev.onrender.com/api/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newPost)
+      });
+
+      if (response.ok) {
+        alert("🎉 Artigo publicado com sucesso no banco SQLite!");
+        setNewPost({ titulo: '', conteudo: '', categoria: 'Tecnologia' });
+        carregarDados(); // Recarrega as listas
+      }
+    } catch (error) {
+      console.error("Erro ao publicar post:", error);
+    }
+  };
+
+  if (loading) return <div style={{ color: '#10b981', textAlign: 'center', padding: '50px', backgroundColor: '#0b0f19', minHeight: '100vh', fontFamily: 'sans-serif' }}>Carregando Painel de Controle...</div>;
 
   return (
     <div style={{ backgroundColor: '#0b0f19', color: '#f3f4f6', padding: '30px', fontFamily: 'sans-serif', minHeight: '100vh' }}>
@@ -126,7 +147,7 @@ const handleCreatePost = async (e) => {
               <label style={{ display: 'block', color: '#9ca3af', marginBottom: '5px', fontSize: '14px' }}>Título Principal da Home</label>
               <input 
                 type="text" 
-                value={config.home_titulo} 
+                value={config.home_titulo || ''} 
                 onChange={(e) => setConfig({...config, home_titulo: e.target.value})}
                 style={{ width: '100%', padding: '10px', backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '6px', color: '#fff', boxSizing: 'border-box' }}
               />
@@ -135,7 +156,7 @@ const handleCreatePost = async (e) => {
               <label style={{ display: 'block', color: '#9ca3af', marginBottom: '5px', fontSize: '14px' }}>Subtítulo da Home</label>
               <textarea 
                 rows="2"
-                value={config.home_subtitulo} 
+                value={config.home_subtitulo || ''} 
                 onChange={(e) => setConfig({...config, home_subtitulo: e.target.value})}
                 style={{ width: '100%', padding: '10px', backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '6px', color: '#fff', boxSizing: 'border-box', fontFamily: 'sans-serif' }}
               />
@@ -143,27 +164,18 @@ const handleCreatePost = async (e) => {
            <div>
               <label style={{ display: 'block', color: '#9ca3af', marginBottom: '5px', fontSize: '14px' }}>Sobre Mim</label>
               <textarea 
-              rows="4"
-              value={config.sobre_mim || ''} 
-              onChange={(e) => setConfig({...config, sobre_mim: e.target.value})}
-              style={{ 
-              width: '100%', 
-              padding: '10px', 
-              backgroundColor: '#1f2937', 
-              border: '1px solid #374151', 
-              borderRadius: '6px', 
-              color: '#fff', 
-              boxSizing: 'border-box', 
-              fontFamily: 'sans-serif' 
-            }}
-               placeholder="Escreva sua descrição profissional aqui..."
+                rows="4"
+                value={config.sobre_mim || ''} 
+                onChange={(e) => setConfig({...config, sobre_mim: e.target.value})}
+                style={{ width: '100%', padding: '10px', backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '6px', color: '#fff', boxSizing: 'border-box', fontFamily: 'sans-serif' }}
+                placeholder="Escreva sua descrição profissional aqui..."
               />
            </div>
             <div>
               <label style={{ display: 'block', color: '#9ca3af', marginBottom: '5px', fontSize: '14px' }}>Habilidades (Separadas por vírgula)</label>
               <input 
                 type="text" 
-                value={config.habilidades} 
+                value={config.habilidades || ''} 
                 onChange={(e) => setConfig({...config, habilidades: e.target.value})}
                 style={{ width: '100%', padding: '10px', backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '6px', color: '#fff', boxSizing: 'border-box' }}
               />

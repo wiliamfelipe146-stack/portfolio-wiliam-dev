@@ -51,7 +51,8 @@ function App() {
     setStatus('⏳ Processando e validando...');
 
     try {
-     const response = await fetch("https://backend-wiliam-dev.onrender.com/api/leads", {
+      // 🟢 AJUSTADO: Agora utilizando a constante API_URL definida no topo de forma limpa e dinâmica
+      const response = await fetch(`${API_URL}/leads`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
